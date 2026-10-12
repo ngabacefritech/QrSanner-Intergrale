@@ -1,0 +1,61 @@
+{
+  "name": "qrscanner",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "start": "expo start",
+    "start:lan": "expo start --lan",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "check": "npx expo-doctor",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "test:coverage": "jest --coverage",
+    "eas-build": "eas build --platform all"
+  },
+  "dependencies": {
+    "@react-navigation/native": "^7.5.0",
+    "@react-navigation/native-stack": "^7.20.0",
+    "expo": "~57.0.27",
+    "expo-camera": "~57.0.6",
+    "expo-constants": "~57.0.21",
+    "expo-navigation-bar": "~57.0.3",
+    "expo-screen-orientation": "~57.0.2",
+    "expo-splash-screen": "~57.0.9",
+    "expo-status-bar": "~57.0.1",
+    "expo-video": "~57.0.5",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^29.5.14",
+    "@types/react": "~19.2.2",
+    "jest": "^29.7.0",
+    "jest-expo": "~57.0.5",
+    "react-test-renderer": "19.2.3",
+    "typescript": "~6.0.3"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/__tests__/**/*.test.ts",
+      "<rootDir>/__tests__/**/*.test.tsx"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "moduleNameMapper": {
+      "\\.(png|jpg|jpeg|gif|mp4|mov|wav|mp3)$": "<rootDir>/__mocks__/fileMock.js"
+    },
+    "collectCoverageFrom": [
+      "src/services/**/*.ts",
+      "src/utils/**/*.ts"
+    ]
+  }
+}

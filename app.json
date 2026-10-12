@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "QRScanner",
+    "slug": "qrscanner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#070B1A",
+    "primaryColor": "#22D3EE",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.qrscanner.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "QRScanner utilise la caméra pour lire les QR codes des campagnes publicitaires. Les images ne sont ni enregistrées ni envoyées."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#070B1A",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.qrscanner.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-video",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "QRScanner utilise la caméra pour lire les QR codes des campagnes publicitaires.",
+          "isCameraPermissionOptional": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 260,
+          "backgroundColor": "#070B1A",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#070B1A"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "95a988b5-6886-4a81-a508-5776eaf6c94e"
+      }
+    }
+  }
+}
