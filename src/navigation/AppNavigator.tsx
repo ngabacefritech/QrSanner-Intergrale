@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AboutScreen } from '../screens/AboutScreen';
 import { AdvertisementScreen } from '../screens/AdvertisementScreen';
 import { ScannerScreen } from '../screens/ScannerScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,6 +30,7 @@ export function AppNavigator() {
         options={{ gestureEnabled: false, animation: 'fade_from_bottom' }}
       />
       <Stack.Screen name="About" component={AboutScreen} options={{ animation: 'slide_from_bottom' }} />
+      <Stack.Screen name="Settings" component={SettingsScreen} options={{ animation: 'slide_from_bottom' }} />
     </Stack.Navigator>
   );
 }

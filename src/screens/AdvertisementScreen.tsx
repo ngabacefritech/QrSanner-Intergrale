@@ -15,7 +15,8 @@ import { useCountdown } from '../hooks/useCountdown';
 import { useImmersiveScreen } from '../hooks/useImmersive';
 import type { RootStackParamList } from '../navigation/types';
 import { campaignService } from '../services/campaignService';
-import { buildAd } from '../services/qrCodeService';
+import { buildAd, buildAdFromEmbedded } from '../services/qrCodeService';
+import { getCampaignService } from '../services/registryProvider';
 import { colors, radius, typography } from '../theme';
 import { countdownProgress } from '../utils/countdown';
 import { resolveMediaSource } from '../utils/media';
@@ -31,7 +32,7 @@ const VIDEO_STALL_TIMEOUT_MS = 6000;
 const AD_FINISH_GRACE_MS = 1800;
 
 export function AdvertisementScreen({ navigation, route }: Props) {
-  const { campaignId, durationSeconds } = route.params;
+  const { campaignId, durationSeconds, origin, embedded } = route.params;
   const isFocused = useIsFocused();
 
   const [ad, setAd] = useState<ReturnType<typeof buildAd>>(null);
@@ -46,12 +47,29 @@ export function AdvertisementScreen({ navigation, route }: Props) {
   const finishedRef = useRef(false);
   const immersive = useImmersiveScreen(true);
 
-  // 1) Rechargement de la campagne résolue depuis le registre (source de vérité).
+  // 1) Publicité : soit elle vient du QR (autonome), soit on la recharge du registre.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const record = await campaignService.findById(campaignId);
+        if (origin === 'embedded' && embedded) {
+          // Rien à recharger : le contenu a déjà été validé par le service de résolution.
+          const built = buildAdFromEmbedded({
+            id: embedded.campaignId,
+            title: embedded.title,
+            mediaType: embedded.mediaType,
+            mediaUrl: embedded.mediaUrl,
+            durationSeconds: embedded.durationSeconds,
+            description: embedded.description,
+            fallbackUrl: embedded.fallbackUrl,
+            allowEarlySkip: embedded.allowEarlySkip,
+          });
+          if (cancelled) return;
+          setAd(built);
+          return;
+        }
+        const service = await getCampaignService();
+        const record = (await service.findById(campaignId)) ?? (await campaignService.findById(campaignId));
         if (cancelled) return;
         const resolved = record ? buildAd(record) : null;
         if (!resolved) {
@@ -72,7 +90,7 @@ export function AdvertisementScreen({ navigation, route }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [campaignId]);
+  }, [campaignId, origin, embedded]);
 
   // 2) Immersif : activé à l'entrée, TOUJOURS restauré à la sortie (unmount/blur).
   useEffect(() => {

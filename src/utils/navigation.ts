@@ -9,13 +9,16 @@ import { clampDuration } from './validation';
 export function buildAdvertisementParams(
   campaignId: string,
   qrValue: string,
-  durationSeconds: number
+  durationSeconds: number,
+  extra: { origin?: 'registry' | 'embedded'; embedded?: RootStackParamList['Advertisement']['embedded'] } = {}
 ): RootStackParamList['Advertisement'] {
   return {
     campaignId,
     qrValue,
     durationSeconds: clampDuration(durationSeconds, 10),
     resolvedAt: new Date().toISOString(),
+    origin: extra.origin ?? 'registry',
+    ...(extra.embedded ? { embedded: extra.embedded } : {}),
   };
 }
 

@@ -60,3 +60,18 @@ jest.mock('expo-constants', () => ({
   expoConfig: { version: '1.0.0', sdkVersion: '57.0.0' },
   nativeAppVersion: '1.0.0',
 }));
+
+// AsyncStorage en mémoire (mock officiel : @react-native-async-storage/async-storage/jest/async-storage)
+jest.mock('@react-native-async-storage/async-storage', () => {
+  const store = new Map();
+  return {
+    __esModule: true,
+    default: {
+      getItem: jest.fn(async (k) => (store.has(k) ? store.get(k) : null)),
+      setItem: jest.fn(async (k, v) => { store.set(k, v); }),
+      removeItem: jest.fn(async (k) => { store.delete(k); }),
+      clear: jest.fn(async () => store.clear()),
+      __store: store,
+    },
+  };
+});

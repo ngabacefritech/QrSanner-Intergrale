@@ -66,6 +66,8 @@ describe('resolveQrCode — cas d’erreur', () => {
       durationSeconds: 0,
     };
     const service: CampaignService = {
+      kind: 'local',
+      degraded: false,
       listCampaigns: async () => [broken],
       findById: async () => broken,
       findByQrCodeValue: async () => broken,
@@ -166,6 +168,8 @@ describe('resolveQrCode — cas de succès', () => {
       allowDirectUrlMedia: true,
     };
     const service: CampaignService = {
+      kind: 'local',
+      degraded: false,
       listCampaigns: async () => [permissive],
       findById: async () => permissive,
       findByQrCodeValue: async () => null,

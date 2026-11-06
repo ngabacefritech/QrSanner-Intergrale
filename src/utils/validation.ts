@@ -49,7 +49,7 @@ export function looksLikeUrl(value: string): boolean {
  */
 export function extractCampaignIdFromUrl(value: string): string | null {
   const trimmed = value.trim();
-  const appScheme = /^qrscanner:\/\/(?:campaign|ad)\/([^/?#\s]+)$/i.exec(trimmed);
+  const appScheme = /^(?:qrsc|qrscanner):\/\/(?:campaign\/|ad\/)?([^/?#\s]+)$/i.exec(trimmed);
   if (appScheme) return normalizeCampaignId(decodeSegment(appScheme[1] ?? ''));
 
   let parsed: URL;

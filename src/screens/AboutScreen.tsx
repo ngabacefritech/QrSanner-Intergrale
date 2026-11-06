@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { campaignService } from '../services/campaignService';
+import { getApiConfig } from '../services/apiConfig';
 import type { CampaignRecord } from '../types/campaign';
 import { colors, radius, spacing, typography } from '../theme';
 
@@ -18,6 +19,7 @@ export function AboutScreen() {
   const navigation = useNavigation<AboutNavigation>();
   const [campaigns, setCampaigns] = useState<CampaignRecord[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [registryLabel, setRegistryLabel] = useState('Registre local (démonstration)');
 
   const reload = useCallback(async () => {
     try {
@@ -30,6 +32,12 @@ export function AboutScreen() {
 
   useEffect(() => {
     void reload();
+    void (async () => {
+      const config = await getApiConfig();
+      setRegistryLabel(
+        config.enabled ? `Registre distant — ${config.baseUrl}` : 'Registre local (démonstration)'
+      );
+    })();
   }, [reload]);
 
   const version = Constants.expoConfig?.version ?? Constants.nativeAppVersion ?? '1.0.0';
@@ -58,11 +66,26 @@ export function AboutScreen() {
           </Text>
           <KeyValue label="Version" value={version} />
           <KeyValue label="SDK Expo" value={runtime} />
-          <KeyValue label="Registre" value="Local (démo) — remplaçable par une API distante" />
+          <KeyValue label="Registre" value={registryLabel} />
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => navigation.navigate('Settings')}
+            style={({ pressed }) => [styles.linkButton, pressed && styles.pressed]}
+            testID="open-settings"
+          >
+            <Text style={styles.linkButtonText}>Configurer la connexion API</Text>
+          </Pressable>
         </Section>
 
         <Section title="Sécurité & confidentialité">
-          <Bullet>Aucune donnée personnelle n’est collectée ni envoyée (aucun serveur configuré).</Bullet>
+          <Bullet>
+            Aucune donnée personnelle n’est collectée ni envoyée. Sans synchronisation activée, l’application
+            n’effectue aucune requête réseau.
+          </Bullet>
+          <Bullet>
+            Avec la synchronisation, seul l’identifiant anonyme de la campagne est échangé avec l’API (aucun
+            identifiant d’appareil, aucune position).
+          </Bullet>
           <Bullet>Le contenu d’un QR code n’est jamais exécuté ni ouvert dans un navigateur.</Bullet>
           <Bullet>Seuls les médias HTTPS (ou localhost en développement) sont chargés.</Bullet>
           <Bullet>Aucune clé API n’est embarquée dans l’application.</Bullet>
@@ -202,4 +225,14 @@ const styles = StyleSheet.create({
   campaignValue: { ...typography.mono, fontSize: 11.5, color: colors.textMuted },
   campaignDesc: { color: colors.textMuted, fontSize: 12, fontStyle: 'italic' },
   note: { color: colors.warning, fontSize: 12, lineHeight: 18 },
+  linkButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    marginTop: 2,
+  },
+  linkButtonText: { color: colors.primary, fontWeight: '600', fontSize: 13 },
 });

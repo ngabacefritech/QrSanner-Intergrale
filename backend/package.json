@@ -1,0 +1,25 @@
+
+{
+  "name": "qrscanner-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API QRScanner : campagnes, QR codes, statistiques",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/",
+    "seed": "node src/seed.js",
+    "migrate": "node src/migrate.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  }
+}

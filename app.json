@@ -23,11 +23,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.qrscanner.app",
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ]
+      "package": "com.qrscanner.app"
     },
     "plugins": [
       "expo-video",
@@ -50,11 +46,6 @@
           }
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "95a988b5-6886-4a81-a508-5776eaf6c94e"
-      }
-    }
+    ]
   }
 }

@@ -78,11 +78,20 @@ export type QrResolutionErrorCode =
   | 'UNKNOWN_CAMPAIGN'
   | 'INACTIVE_CAMPAIGN'
   | 'INVALID_DURATION'
-  | 'UNSAFE_URL';
+  | 'UNSAFE_URL'
+  | 'EMBEDDED_INVALID';
+
+/** Provenance de la publicité affichée. */
+export type AdOrigin = 'registry' | 'embedded';
 
 /** Résultat typé de `resolveQrCode` : succès discrimé ou erreur typée. */
 export type QrResolutionResult =
-  | { readonly ok: true; readonly ad: ResolvedAd; readonly source: 'registry' | 'direct-url' }
+  | {
+      readonly ok: true;
+      readonly ad: ResolvedAd;
+      /** `embedded` : publicité lue directement depuis le QR (hors ligne). */
+      readonly source: 'registry' | 'direct-url' | 'embedded';
+    }
   | { readonly ok: false; readonly code: QrResolutionErrorCode; readonly message: string };
 
 /** Résultat de validation normalisée d'une URL distante. */

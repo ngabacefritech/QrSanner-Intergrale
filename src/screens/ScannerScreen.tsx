@@ -12,13 +12,15 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CameraView, type BarcodeScanningResult } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraStatusPill, type CameraStatusLevel } from '../components/CameraStatusPill';
-import { FlashIcon, InfoIcon } from '../components/Icons';
+import { FlashIcon, GearIcon, InfoIcon } from '../components/Icons';
 import { PermissionDeniedView, PermissionRequestView } from '../components/PermissionViews';
 import { ScannerFrame } from '../components/ScannerFrame';
 import { ToastMessage, type ToastTone } from '../components/ToastMessage';
 import { useAppCameraPermission } from '../hooks/useCameraPermission';
 import type { RootStackParamList } from '../navigation/types';
 import { canAcceptScan, QR_ERROR_MESSAGES, resolveQrCode } from '../services/qrCodeService';
+import { getCampaignService } from '../services/registryProvider';
+import { reportScan } from '../services/analyticsService';
 import { colors, radius, typography } from '../theme';
 import { buildAdvertisementParams } from '../utils/navigation';
 
@@ -97,15 +99,34 @@ export function ScannerScreen() {
         if (value.length === 0) {
           showToast(QR_ERROR_MESSAGES.EMPTY_INPUT);
         } else {
-          const resolution = await resolveQrCode(value);
+          const service = await getCampaignService();
+          const resolution = await resolveQrCode(value, service);
           if (!mountedRef.current) return;
           if (resolution.ok) {
             // Aucune ouverture de lien externe : le média est rendu dans l'app.
+            const embeddedParam =
+              resolution.source === 'embedded'
+                ? {
+                    campaignId: resolution.ad.campaignId,
+                    title: resolution.ad.title,
+                    mediaType: resolution.ad.mediaType,
+                    mediaUrl: resolution.ad.mediaSource.kind === 'remote' ? resolution.ad.mediaSource.url : '',
+                    durationSeconds: resolution.ad.durationSeconds,
+                    description: resolution.ad.description ?? null,
+                    fallbackUrl:
+                      resolution.ad.fallbackImage?.kind === 'remote' ? resolution.ad.fallbackImage.url : null,
+                    allowEarlySkip: resolution.ad.allowEarlySkip,
+                  }
+                : undefined;
             navigation.navigate('Advertisement', buildAdvertisementParams(
               resolution.ad.campaignId,
               value,
-              resolution.ad.durationSeconds
+              resolution.ad.durationSeconds,
+              { origin: resolution.source === 'embedded' ? 'embedded' : 'registry', embedded: embeddedParam }
             ));
+            // Statistiques : best effort, silencieux, aucune donnée personnelle.
+            // reportScan ne fait RIEN si la synchronisation n'est pas activée.
+            void reportScan(resolution.ad.campaignId, resolution.source);
             return; // le scan reste verrouillé tant que l'écran pub est ouvert
           }
           showToast(resolution.message);
@@ -236,6 +257,15 @@ export function ScannerScreen() {
               ]}
             >
               <FlashIcon color={torchOn ? colors.background : colors.primary} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Connexion à l’API des campagnes"
+              onPress={() => navigation.navigate('Settings')}
+              hitSlop={10}
+              style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
+            >
+              <GearIcon color={colors.primary} />
             </Pressable>
             <Pressable
               accessibilityRole="button"

@@ -60,8 +60,8 @@ describe('ToastMessage', () => {
   it('affiche le message et prévient l’hôte à la fin de la durée', () => {
     jest.useFakeTimers();
     const onDismiss = jest.fn();
-    render(<ToastMessage message="QR code inconnu : aucune campagne associée." onDismiss={onDismiss} durationMs={100} />);
-    expect(screen.getByText('QR code inconnu : aucune campagne associée.')).toBeTruthy();
+    render(<ToastMessage message="QR code inconnu : aucune campagne active associée." onDismiss={onDismiss} durationMs={100} />);
+    expect(screen.getByText('QR code inconnu : aucune campagne active associée.')).toBeTruthy();
     act(() => {
       jest.advanceTimersByTime(150);
     });
